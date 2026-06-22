@@ -1,77 +1,166 @@
 from kivymd.app import MDApp
-from kivy.uix.screenmanager import Screen, ScreenManager
-from kivy.uix.button import Button
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.gridlayout import MDGridLayout
+from kivymd.uix.button import MDRoundFlatButton, MDFillRoundFlatButton, MDFlatButton
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.label import MDLabel
-from kivy.uix.gridlayout import GridLayout
-from kivy.graphics.context_instructions import Color
-from kivy.graphics.vertex_instructions import Rectangle
-
-class Principal(Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.ecuacion = ''
-
-        with self.canvas:
-            Color(0.6, 0.6, 0.6, 0.9)
-            self.rect = Rectangle(size = (self.size[0], 0.15*self.size[1]), pos = (0, 0.85*self.height))
-
-        self.muestra = MDLabel(text = self.ecuacion, bold = True, halign = 'center', pos_hint = {'center_y': 0.925})
-        self.add_widget(self.muestra)
-
-        self.botones = GridLayout(cols = 4, size_hint = (1, 0.7), spacing = 5, padding = 10, pos_hint = {'center_x': 0.5, 'top': 0.82})
-
-        self.botones.add_widget(Button(text = '7', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('7')))
-        self.botones.add_widget(Button(text = '8', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('8')))
-        self.botones.add_widget(Button(text = '9', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('9')))
-        self.botones.add_widget(Button(text = '+', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('+')))
-        self.botones.add_widget(Button(text = '4', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('4')))
-        self.botones.add_widget(Button(text = '5', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('5')))
-        self.botones.add_widget(Button(text = '6', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('6')))
-        self.botones.add_widget(Button(text = '-', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('-')))
-        self.botones.add_widget(Button(text = '1', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('1')))
-        self.botones.add_widget(Button(text = '2', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('2')))
-        self.botones.add_widget(Button(text = '3', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('3')))
-        self.botones.add_widget(Button(text = '*', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('*')))
-        self.botones.add_widget(Button(text = '.', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('.')))
-        self.botones.add_widget(Button(text = '0', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('0')))
-        self.botones.add_widget(Button(text = '=', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.resultado()))
-        self.botones.add_widget(Button(text = '/', bold = True, size_hint = (0.25, 0.18), background_color = 'lightblue', on_press = lambda x: self.presionar('/')))
+from kivy.core.window import Window
 
 
-        self.add_widget(self.botones)
+Window.size = (350, 600)
 
-        self.add_widget(Button(text = 'Borrar', bold = True, size_hint = (0.25, 0.12), background_color = 'red', on_press = lambda x: self.borrar(),
-        pos_hint = {'center_x': 0.5}))
-
-    def on_size(self, *args):
-        self.rect.size = (self.size[0], 0.15*self.size[1])
-        self.rect.pos = (0, 0.85*self.height)
-
-    def presionar(self, valor):
-        self.ecuacion = self.ecuacion + valor
-        self.muestra.text = self.ecuacion
-
-    def resultado(self):
-        try:
-            self.ecuacion = str(eval(self.ecuacion))
-            self.muestra.text = self.ecuacion
-
-        except:
-            self.ecuacion = ''
-            self.muestra.text = 'Error'
-
-    def borrar(self):
-        self.ecuacion = ''
-        self.muestra.text = self.ecuacion
-
-class Miapp(MDApp):
+class CalculadoraApp(MDApp):
     def build(self):
+        self.theme_cls.theme_style = "Dark"  
+        self.theme_cls.primary_palette = "DeepPurple"
+        
+        # Lista para almacenar las operaciones del historial
+        self.historial = []
+        self.dialogo_historial = None
+        
+        # Layout Principal (Vertical)
+        layout_principal = MDBoxLayout(orientation='vertical', padding=15, spacing=10)
+        
+        # Pantalla de visualización (Input de texto)
+        self.pantalla = MDTextField(
+            text="0",
+            halign="right",
+            font_size="36sp",
+            readonly=True,
+            mode="fill",
+            fill_color_normal=(0.15, 0.15, 0.15, 1)
+        )
+        layout_principal.add_widget(self.pantalla)
+        
+        # Cuadrícula para los botones (4 columnas)
+        cuadricula = MDGridLayout(cols=4, spacing=10, size_hint_y=0.8)
+        
+        # Reemplazamos el espacio vacío final por 'H' de Historial
+        botones = [
+            'C', '%', '/', 'del',
+            '7', '8', '9', '*',
+            '4', '5', '6', '-',
+            '1', '2', '3', '+',
+            '0', '.', '=', 'H'
+        ]
+        
+        # Creación y agregación de botones a la cuadrícula
+        for texto in botones:
+            # Si es un operador o botón especial, le damos un color llamativo
+            if texto in ['/', '*', '-', '+', '=', 'C', '%', 'del', 'H']:
+                btn = MDFillRoundFlatButton(
+                    text=texto,
+                    font_size="20sp",
+                    size_hint=(1, 1),
+                    on_press=self.al_presionar_boton
+                )
+            else:
+                # Botones numéricos normales
+                btn = MDRoundFlatButton(
+                    text=texto,
+                    font_size="20sp",
+                    size_hint=(1, 1),
+                    on_press=self.al_presionar_boton
+                )
+            cuadricula.add_widget(btn)
+            
+        layout_principal.add_widget(cuadricula)
+        return layout_principal
 
-        SC = ScreenManager()
-        SC.add_widget(Principal(name = 'principal'))
-        self.theme_cls.theme_style = "Dark"
+    def al_presionar_boton(self, instancia):
+        texto_actual = self.pantalla.text
+        texto_boton = instancia.text
+        
+        if texto_boton == 'C':
+            self.pantalla.text = '0'
+            
+        elif texto_boton == 'del':
+            if len(texto_actual) > 1:
+                self.pantalla.text = texto_actual[:-1]
+            else:
+                self.pantalla.text = '0'
+                
+        elif texto_boton == 'H':
+            # Llamamos a la función que muestra el historial
+            self.mostrar_historial()
+                
+        elif texto_boton == '=':
+            try:
+                # Reemplazamos el símbolo de porcentaje por /100 para que python lo entienda
+                expresion = texto_actual.replace('%', '/100')
+                resultado = str(eval(expresion))
+                
+                if resultado.endswith('.0'):
+                    resultado = resultado[:-2]
+                
+                # Guardamos la operación en el historial ANTES de cambiar la pantalla
+                operacion_completa = f"{texto_actual} = {resultado}"
+                self.historial.append(operacion_completa)
+                    
+                self.pantalla.text = resultado
 
-        return SC
+            except ZeroDivisionError:
+                self.pantalla.text = "Error: Div / 0"
+            except Exception:
+                self.pantalla.text = "Error"
+                
+        else:
+            if texto_actual == '0' or "Error" in texto_actual:
+                if texto_boton in ['/', '*', '-', '+', '%', '.']:
+                    self.pantalla.text = "0" + texto_boton
+                else:
+                    self.pantalla.text = texto_boton
+            else:
+                self.pantalla.text += texto_boton
 
-Miapp().run()
+    def mostrar_historial(self):
+        # Si el historial está vacío, mostramos un mensaje amigable
+        if not self.historial:
+            texto_historial = "No hay operaciones registradas todavía."
+        else:
+            # Unimos los elementos del historial con saltos de línea (del más nuevo al más viejo)
+            texto_historial = "\n".join(reversed(self.historial))
+
+        # Crear un contenedor con scroll por si el historial es muy largo
+        scroll = MDScrollView(size_hint_y=None, height=200)
+        contenido = MDLabel(
+            text=texto_historial,
+            theme_text_color="Secondary",
+            font_style="Body1",
+            size_hint_y=None,
+            adaptive_height=True
+        )
+        scroll.add_widget(contenido)
+
+        # Construimos y abrimos el diálogo flotante
+        self.dialogo_historial = MDDialog(
+            title="Historial de Operaciones",
+            type="custom",
+            content_cls=scroll,
+            buttons=[
+                MDFlatButton(
+                    text="Borrar Todo",
+                    theme_text_color="Custom",
+                    text_color=self.theme_cls.primary_color,
+                    on_release=self.borrar_historial
+                ),
+                MDFlatButton(
+                    text="Cerrar",
+                    theme_text_color="Custom",
+                    text_color=self.theme_cls.primary_color,
+                    on_release=lambda x: self.dialogo_historial.dismiss()
+                ),
+            ],
+        )
+        self.dialogo_historial.open()
+
+    def borrar_historial(self, instancia):
+        # Limpia la lista y cierra el diálogo
+        self.historial.clear()
+        if self.dialogo_historial:
+            self.dialogo_historial.dismiss()
+
+if __name__ == '__main__':
+    CalculadoraApp().run()
