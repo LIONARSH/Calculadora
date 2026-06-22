@@ -46,7 +46,7 @@ requirements = python3,hostpython3,kivy=2.3.0, pillow
 presplash.filename = %(source.dir)s/calcu.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/calcu.png
+icon.filename = %(source.dir)s/calcul.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
@@ -66,7 +66,7 @@ orientation = portrait
 osx.python_version = 3
 
 # Kivy version to use
-osx.kivy_version = 1.9.1
+osx.kivy_version = 2.3.0
 
 #
 # Android specific
