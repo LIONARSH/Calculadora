@@ -40,7 +40,6 @@ jobs:
 
       - name: Install Android packages
         run: |
-
           yes | sdkmanager --licenses
 
           sdkmanager \
@@ -51,7 +50,6 @@ jobs:
 
       - name: Install Linux packages
         run: |
-
           sudo apt update
 
           sudo apt install -y \
@@ -75,7 +73,6 @@ jobs:
 
       - name: Install Buildozer
         run: |
-
           python -m pip install --upgrade pip
 
           pip install setuptools wheel
@@ -88,7 +85,6 @@ jobs:
       - name: Cache Buildozer
         uses: actions/cache@v4
         with:
-
           path: |
             ~/.buildozer
             ~/.gradle
@@ -101,53 +97,40 @@ jobs:
 
       - name: Clean build
         run: |
-
           rm -rf .buildozer
-
           rm -rf bin
 
 
       - name: Build APK
         env:
-
           ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
-
           ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
-
           ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
 
         run: |
-
           buildozer -v android debug 2>&1 | tee build.log
 
 
       - name: Find APK
         if: always()
         run: |
-
           echo "APK encontrados:"
           find . -name "*.apk"
 
 
       - name: Upload APK
-        if: success()
+        if: always()
         uses: actions/upload-artifact@v4
-
         with:
-
           name: calculadora-apk
-
           path: |
             bin/*.apk
-            **/*.apk
+          if-no-files-found: error
 
 
       - name: Upload Build Log
         if: always()
         uses: actions/upload-artifact@v4
-
         with:
-
           name: build-log
-
           path: build.log
