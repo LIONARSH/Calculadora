@@ -31,10 +31,10 @@ fullscreen = 0
 
 
 # Imagen de carga
-presplash.filename = %(source.dir)s/calcu.png
+presplash.filename = %(source.dir)s/calcul.jpeg
 
 # Icono
-icon.filename = %(source.dir)s/calcul.png
+icon.filename = %(source.dir)s/calcul.jpeg
 
 
 
