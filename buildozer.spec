@@ -1,105 +1,49 @@
-name: Build APK
+[app]
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+title = Calculadora
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
+package.name = calculadora
+package.domain = org.test
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
+version = 0.1
 
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+requirements = python3,kivy==2.3.0,pillow
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+orientation = portrait
 
-      - name: Accept SDK licenses
-        run: yes | sdkmanager --licenses
+fullscreen = 0
 
-      - name: Install Android SDK packages
-        run: |
-          sdkmanager \
-            "platform-tools" \
-            "platforms;android-33" \
-            "build-tools;33.0.2" \
-            "cmdline-tools;latest"
+presplash.filename = %(source.dir)s/calcu.png
+icon.filename = %(source.dir)s/calcul.png
 
-      - name: Install Linux dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            zip unzip git \
-            autoconf automake libtool \
-            pkg-config \
-            zlib1g-dev \
-            libncurses5-dev \
-            libffi-dev \
-            libssl-dev \
-            libsqlite3-dev \
-            libjpeg-dev \
-            libpng-dev \
-            liblzma-dev \
-            build-essential \
-            cmake \
-            ninja-build
 
-      - name: Install Python packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install Cython==0.29.36
-          pip install buildozer
+# -------------------------
+# Android
+# -------------------------
 
-      - name: Cache Buildozer
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.buildozer
-            ~/.gradle
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+android.api = 33
+android.minapi = 21
 
-      - name: Clean previous build
-        run: |
-          rm -rf .buildozer
-          rm -rf bin
+android.ndk = 25b
 
-      - name: Build APK
-        run: |
-          set -o pipefail
-          buildozer -v android debug | tee build.log
+android.accept_sdk_license = True
 
-      - name: Search APK
-        if: always()
-        run: |
-          find . -name "*.apk"
+android.archs = arm64-v8a, armeabi-v7a
 
-      - name: Upload APK
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Calculadora-APK
-          path: |
-            bin/*.apk
-            **/*.apk
-          if-no-files-found: warn
+android.allow_backup = True
 
-      - name: Upload Build Log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
+android.debug_artifact = apk
+
+
+# -------------------------
+# Buildozer
+# -------------------------
+
+[buildozer]
+
+log_level = 2
+
+warn_on_root = 1
