@@ -19,8 +19,8 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,json
 version = 0.1
 
 
-# Dependencias Python/Kivy
-requirements = python3,kivy,pillow
+# Cambia esta línea:
+requirements = python3,kivy,kivymd,pillow
 
 
 # Orientación
@@ -42,20 +42,36 @@ icon.filename = %(source.dir)s/calcul.png
 # ANDROID
 # ==========================
 
-# Android
+# ==========================
+# ANDROID
+# ==========================
 
+# (int) Versión de la API de Android objetivo
 android.api = 33
 
+# (int) Versión mínima del SDK de Android
 android.minapi = 21
 
+# (int) Versión del NDK de Android
 android.ndk = 25b
 
+# (bool) Indicar si aceptas la licencia del SDK
 android.accept_sdk_license = True
 
+# (list) Arquitecturas soportadas
 android.archs = arm64-v8a,armeabi-v7a
 
+# (str) Tipo de artefacto de debug
 android.debug_artifact = apk
 
+# (bool) CRÍTICO: Necesario para que KivyMD funcione correctamente
+android.enable_androidx = True
+
+# (list) Permisos necesarios (descomenta si necesitas Internet)
+# android.permissions = android.permission.INTERNET
+
+# (str) Opcional: Nombre del paquete de Java
+# android.package = org.test.calculadora
 
 # ==========================
 # PERMISOS (opcional)
