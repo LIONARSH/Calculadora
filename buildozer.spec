@@ -20,7 +20,7 @@ version = 0.1
 
 
 # Dependencias Python/Kivy
-requirements = python3,kivy==2.3.0,pillow
+requirements = python3,kivy,pillow
 
 
 # Orientación
@@ -42,27 +42,19 @@ icon.filename = %(source.dir)s/calcul.png
 # ANDROID
 # ==========================
 
-# Versión Android objetivo
+# Android
+
 android.api = 33
 
-# Versión mínima compatible
 android.minapi = 21
 
-# Versión NDK compatible con Buildozer
 android.ndk = 25b
 
-# Aceptar licencias automáticamente
 android.accept_sdk_license = True
 
-# Arquitectura del APK
-android.archs = arm64-v8a
+android.archs = arm64-v8a,armeabi-v7a
 
-# Generar APK debug
 android.debug_artifact = apk
-
-# Backup permitido
-android.allow_backup = True
-
 
 
 # ==========================
