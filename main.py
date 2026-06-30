@@ -9,7 +9,7 @@ from kivymd.uix.label import MDLabel
 from kivy.core.window import Window
 
 
-Window.size = (350, 600)
+
 
 class CalculadoraApp(MDApp):
     def build(self):
